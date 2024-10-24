@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content=
+  "width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" sizes="32x32" href=
+  "https://kirka.lukeskywalk.com/favicon.ico">
+  <meta property="og:title" content=
+  "kirka.lukeskywalk.com/tradehistory.html: kirka.io global chat trade history. #kirkaio #trades">
+  <meta name="description" content=
+  "kirka.lukeskywalk.com/tradehistory.html: kirka.io global chat trade history. #kirkaio #trades">
+  <meta property="og:description" content=
+  "kirka.lukeskywalk.com/tradehistory.html: kirka.io global chat trade history. #kirkaio #trades">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <title>Trade History - KirkaTrades</title>
+  <link rel="stylesheet" href=
+  "https://kirka.lukeskywalk.com/static/bootstrap/5.3.2-dist/css/bootstrap.min.css"
+  integrity=
+  "sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN">
+
+  <style>
+        .nav-scroller {
+            position: relative;
+            z-index: 2;
+            height: 2.75rem;
+            overflow-y: hidden;
+        }
+
+        .nav-scroller .nav {
+            display: flex;
+            flex-wrap: nowrap;
+            padding-bottom: 1rem;
+            margin-top: -1px;
+            overflow-x: auto;
+            text-align: center;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            max-width: 280px;
+            margin: auto;
+            text-align: center;
+        }
+        .calendar-day {
+            border: 1px solid #ccc;
+            padding: 10px;
+            cursor: not-allowed; /* Default to not selectable */
+        }
+        .selectable {
+            cursor: pointer; /* Cursor for selectable dates */
+            border: 2px solid #0d6efd; /* Thicker border for valid dates */
+        }
+        .selected {
+            border: 3px solid #198754; /* Thicker border for selected date */
+        }
+        .fake-date {
+            background-color: #6c757d; /* Differentiate the fake date */
+            border: 1px solid lightgray;
+            padding: 6px !important;
+            cursor: pointer; /* Clickable */
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
+  </style>
+</head>
+<body>
+  <script fetchpriority="high" src=
+  "https://kirka.lukeskywalk.com/static/bootstrap/5.3.2-dist/js/bootstrap.bundle.min.js"
+  integrity=
+  "sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"></script>
+  
+  <script src=
+  "https://cdn.jsdelivr.net/npm/table-sort-js/table-sort.min.js"></script>
+  <div id="helloworld" class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12">
+        <p><a class="btn-link text-secondary" href=
+        "https://kirka.lukeskywalk.com"><img class="image-fluid"
+        src="kirkatradeslogo_36x36.png" style=
+        "width:36px; height: 36px;" alt=
+        "KirkaTrades Logo">KirkaTrades</a> <a class=
+        "btn-link text-secondary" href=
+        "https://discord.gg/8fyDSwZ94r" target="_blank"><svg xmlns=
+        "http://www.w3.org/2000/svg" width="16" height="16" fill=
+        "currentcolor" class="bi bi-discord" viewbox="0 0 16 16">
+        <path d=
+        "M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.03.052.052 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019Zm-8.198 7.307c-.789 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612Zm5.316 0c-.788 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612Z"></path>
+        </svg>Discord</a> | <a class="btn-link text-secondary"
+        href="https://kirka.lukeskywalk.com/chat.html" target=
+        "_blank"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+        height="16" fill="currentcolor" class=
+        "bi bi-chat-dots-fill" viewbox="0 0 16 16">
+        <path d=
+        "M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+        </svg>GlobalChat</a> | <a class="btn-link text-secondary"
+        href="https://kirka.lukeskywalk.com/pricelist.html" target=
+        "_blank"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+        height="16" fill="currentcolor" class=
+        "bi bi-graph-up-arrow" viewbox="0 0 16 16">
+        <path fill-rule="evenodd" d=
+        "M0 0h1v15h15v1H0V0Zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5Z"></path>
+        </svg>Pricelist</a> | <a class="btn-link text-secondary"
+        href="https://kirka.lukeskywalk.com/tradeoffer.html"
+        target="_blank"><svg xmlns="http://www.w3.org/2000/svg"
+        width="16" height="16" fill="currentcolor" class=
+        "bi bi-bar-chart" viewbox="0 0 16 16">
+        <path d=
+        "M4 11H2v3h2v-3zm5-4H7v7h2V7zm5-5v12h-2V2h2zm-2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-2zM6 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm-5 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3z"></path>
+        </svg>Analyzer</a> | <a class="btn-link text-secondary"
+        href="https://kirka.lukeskywalk.com/trades.html" target=
+        "_blank"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+        height="16" fill="currentcolor" class="bi bi-cash-coin"
+        viewbox="0 0 16 16">
+        <path fill-rule="evenodd" d=
+        "M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0z"></path>
+        <path d=
+        "M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1h-.003zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195l.054.012z"></path>
+        <path d=
+        "M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083c.058-.344.145-.678.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1H1z"></path>
+        <path d=
+        "M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 5.982 5.982 0 0 1 3.13-1.567z"></path>
+        </svg>Trades</a> | <a class="btn-link text-secondary"
+        onclick="changeTheme()" href="javascript:;" role=
+        "button"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+        height="16" fill="currentcolor" class="bi bi-palette-fill"
+        viewbox="0 0 16 16">
+        <path d=
+        "M12.433 10.07C14.133 10.585 16 11.15 16 8a8 8 0 1 0-8 8c1.996 0 1.826-1.504 1.649-3.08-.124-1.101-.252-2.237.351-2.92.465-.527 1.42-.237 2.433.07zM8 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM5 6.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm.5 6.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"></path>
+        </svg>Theme</a> | <a class="text-secondary" href=
+        "./tradehistory/snapshots.json" target="_blank"><svg xmlns=
+        "http://www.w3.org/2000/svg" width="16" height="16" fill=
+        "currentcolor" class="bi bi-filetype-json" viewbox=
+        "0 0 16 16">
+        <path fill-rule="evenodd" d=
+        "M14 4.5V11h-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5ZM4.151 15.29a1.176 1.176 0 0 1-.111-.449h.764a.578.578 0 0 0 .255.384c.07.049.154.087.25.114.095.028.201.041.319.041.164 0 .301-.023.413-.07a.559.559 0 0 0 .255-.193.507.507 0 0 0 .084-.29.387.387 0 0 0-.152-.326c-.101-.08-.256-.144-.463-.193l-.618-.143a1.72 1.72 0 0 1-.539-.214 1.001 1.001 0 0 1-.352-.367 1.068 1.068 0 0 1-.123-.524c0-.244.064-.457.19-.639.128-.181.304-.322.528-.422.225-.1.484-.149.777-.149.304 0 .564.05.779.152.217.102.384.239.5.41.12.17.186.359.2.566h-.75a.56.56 0 0 0-.12-.258.624.624 0 0 0-.246-.181.923.923 0 0 0-.37-.068c-.216 0-.387.05-.512.152a.472.472 0 0 0-.185.384c0 .121.048.22.144.3a.97.97 0 0 0 .404.175l.621.143c.217.05.406.12.566.211a1 1 0 0 1 .375.358c.09.148.135.335.135.56 0 .247-.063.466-.188.656a1.216 1.216 0 0 1-.539.439c-.234.105-.52.158-.858.158-.254 0-.476-.03-.665-.09a1.404 1.404 0 0 1-.478-.252 1.13 1.13 0 0 1-.29-.375Zm-3.104-.033a1.32 1.32 0 0 1-.082-.466h.764a.576.576 0 0 0 .074.27.499.499 0 0 0 .454.246c.19 0 .33-.055.422-.164.091-.11.137-.265.137-.466v-2.745h.791v2.725c0 .44-.119.774-.357 1.005-.237.23-.565.345-.985.345a1.59 1.59 0 0 1-.568-.094 1.145 1.145 0 0 1-.407-.266 1.14 1.14 0 0 1-.243-.39Zm9.091-1.585v.522c0 .256-.039.47-.117.641a.862.862 0 0 1-.322.387.877.877 0 0 1-.47.126.883.883 0 0 1-.47-.126.87.87 0 0 1-.32-.387 1.55 1.55 0 0 1-.117-.641v-.522c0-.258.039-.471.117-.641a.87.87 0 0 1 .32-.387.868.868 0 0 1 .47-.129c.177 0 .333.043.47.129a.862.862 0 0 1 .322.387c.078.17.117.383.117.641Zm.803.519v-.513c0-.377-.069-.701-.205-.973a1.46 1.46 0 0 0-.59-.63c-.253-.146-.559-.22-.916-.22-.356 0-.662.074-.92.22a1.441 1.441 0 0 0-.589.628c-.137.271-.205.596-.205.975v.513c0 .375.068.699.205.973.137.271.333.48.589.626.258.145.564.217.92.217.357 0 .663-.072.917-.217.256-.146.452-.355.589-.626.136-.274.205-.598.205-.973Zm1.29-.935v2.675h-.746v-3.999h.662l1.752 2.66h.032v-2.66h.75v4h-.656l-1.761-2.676h-.032Z"></path>
+        </svg>API</a> updates / 15 minutes.</p>
+        <p>Report any problems, suggestions, comments or insults at
+        skywalk#5905 on Discord DMs, or kirka.io
+        skywalk#7VUNQK.</p>
+        <p><span id="timestampSnapshotsDiv"></span>, <span id=
+        "timestampTradesDiv"></span></p>
+      </div>
+    </div>
+    <h1>Trade History</h1>
+    <div class="calendar-header">
+      <button id="prevMonth">&lt;</button> <span id=
+      "monthYear"></span> <button id="nextMonth">&gt;</button>
+    </div>
+    <div id="calendar" class="calendar">
+      <!-- calendar data -->
+    </div>
+    <ul class="nav nav-tabs mt-2" id="myTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active text-secondary" id="default-tab"
+        data-bs-toggle="tab" href="#default-content" role="tab"
+        aria-controls="default-content" aria-selected="true"
+        data-gamemode="default">Trades</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link text-secondary" id="profit-tab"
+        data-bs-toggle="tab" href="#profit-content" role="tab"
+        aria-controls="profit-content" aria-selected="true"
+        data-gamemode="profit">Traders</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link text-secondary" id="item-tab"
+        data-bs-toggle="tab" href="#item-content" role="tab"
+        aria-controls="item-content" aria-selected="true"
+        data-gamemode="item">Items</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="default-content"
+      role="tabpanel" aria-labelledby="default-tab">
+        <div class="card">
+          <div class="card-body">
+            <div class="card mb-1">
+              <div class="card-body">
+                <div class="input-group my-2 mx-2 mr-2">
+                  <span class="input-group-text" id=
+                  "searchInputText">Search:</span> <input type=
+                  "text" class="form-control" id="searchInput"
+                  aria-describedby="searchInputText">
+                </div>
+                <div id="searchResults"></div>
+              </div>
+            </div>
+            <div class="card mb-1">
+              <div class="card-header" id="statsControl">
+                Stats [<a class="btn-link text-secondary" onclick=
+                "hideStats()" href="javascript:;" role=
+                "button">Hide</a>]
+              </div>
+              <div class="card-body" id="statsDisplay">
+                <div class="row mb-1">
+                  <div class="row">
+                    <div class="col col-sm-12 col-md-2 col-lg-2">
+                      <div class="card">
+                        <div class="card-header">
+                          Trades
+                        </div>
+                        <div id="statsTrades" class="card-body">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col col-sm-12 col-md-2 col-lg-2">
+                      <div class="card">
+                        <div class="card-header">
+                          Traders
+                        </div>
+                        <div id="statsTraders" class="card-body">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col col-sm-12 col-md-2 col-lg-2">
+                      <div class="card">
+                        <div class="card-header">
+                          Traded
+                        </div>
+                        <div id="statsTraded" class="card-body">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col col-sm-12 col-md-2 col-lg-2">
+                      <div class="card">
+                        <div class="card-header">
+                          Items
+                        </div>
+                        <div id="statsItems" class="card-body">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col col-sm-12 col-md-2 col-lg-2">
+                      <div class="card">
+                        <div class="card-header">
+                          Volume
+                        </div>
+                        <div id="statsQuantity" class="card-body">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col col-sm-12 col-md-2 col-lg-2">
+                      <div class="card">
+                        <div class="card-header">
+                          Gains/Losses
+                        </div>
+                        <div id="statsGainLoss" class="card-body">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col col-sm-12 col-md-3">
+                    <div class="card mb-1">
+                      <div class="card-header">
+                        Expensive Trades
+                      </div>
+                      <div class="card-body">
+                        <div class=
+                        "table-responsive table-responsive-sm">
+                          <table class=
+                          "table table-striped table-hover">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>Id</th>
+                                <th>Offer</th>
+                                <th>Want</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody id="dailyTop8Expensive"></tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col col-sm-12 col-md-3">
+                    <div class="card mb-1">
+                      <div class="card-header">
+                        Biased Trades
+                      </div>
+                      <div class="card-body">
+                        <div class=
+                        "table-responsive table-responsive-sm">
+                          <table class=
+                          "table table-striped table-hover">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>Id</th>
+                                <th>Offer</th>
+                                <th>Want</th>
+                                <th>Difference</th>
+                              </tr>
+                            </thead>
+                            <tbody id="dailyTop8BiasedTrade">
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col col-sm-12 col-md-3">
+                    <div class="card mb-1">
+                      <div class="card-header">
+                        Gainers
+                      </div>
+                      <div class="card-body">
+                        <div class=
+                        "table-responsive table-responsive-sm">
+                          <table class=
+                          "table table-striped table-hover">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>User</th>
+                                <th>Profit</th>
+                              </tr>
+                            </thead>
+                            <tbody id="dailyTop8Gainer"></tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col col-sm-12 col-md-3">
+                    <div class="card mb-1">
+                      <div class="card-header">
+                        Losers
+                      </div>
+                      <div class="card-body">
+                        <div class=
+                        "table-responsive table-responsive-sm">
+                          <table class=
+                          "table table-striped table-hover">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>User</th>
+                                <th>Profit</th>
+                              </tr>
+                            </thead>
+                            <tbody id="dailyTop8Loser"></tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col col-sm-12 col-md-3">
+                    <div class="card mb-1">
+                      <div class="card-header">
+                        Expensive Items
+                      </div>
+                      <div class="card-body">
+                        <div class=
+                        "table-responsive table-responsive-sm">
+                          <table class=
+                          "table table-striped table-hover">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>Item</th>
+                                <th>Value</th>
+                              </tr>
+                            </thead>
+                            <tbody id="dailyTop8ExpensiveItem">
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col col-sm-12 col-md-3">
+                    <div class="card mb-1">
+                      <div class="card-header">
+                        Most traded
+                      </div>
+                      <div class="card-body">
+                        <div class=
+                        "table-responsive table-responsive-sm">
+                          <table class=
+                          "table table-striped table-hover">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                              </tr>
+                            </thead>
+                            <tbody id="dailyTop8TradedItem">
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col col-sm-12 col-md-3">
+                    <div class="card mb-1">
+                      <div class="card-header">
+                        Most offered
+                      </div>
+                      <div class="card-body">
+                        <div class=
+                        "table-responsive table-responsive-sm">
+                          <table class=
+                          "table table-striped table-hover">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                              </tr>
+                            </thead>
+                            <tbody id="dailyTop8OfferedItem">
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col col-sm-12 col-md-3">
+                    <div class="card mb-1">
+                      <div class="card-header">
+                        Most wanted
+                      </div>
+                      <div class="card-body">
+                        <div class=
+                        "table-responsive table-responsive-sm">
+                          <table class=
+                          "table table-striped table-hover">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                              </tr>
+                            </thead>
+                            <tbody id="dailyTop8WantedItem">
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                Trades
+              </div>
+              <div class="card-body">
+                <div class="table-responsive table-responsive-sm">
+                  <table class=
+                  "table table-striped table-hover table-sort">
+                    <thead>
+                      <tr>
+                        <th class="numeric-sort">#</th>
+                        <th class="disable-sort">Timestamp</th>
+                        <th class="numeric-sort">Trade ID</th>
+                        <th class="alpha-sort">Offerer</th>
+                        <th class="alpha-sort">Accepter</th>
+                        <th class="numeric-sort">Total</th>
+                        <th class="numeric-sort">Offer Total</th>
+                        <th class="disable-sort">Offer Items</th>
+                        <th class="numeric-sort">Want Total</th>
+                        <th class="disable-sort">Want Items</th>
+                        <th class="numeric-sort">Difference</th>
+                        <th class="numeric-sort">Ratio</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dailyTradesTableBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="profit-content" role=
+      "tabpanel" aria-labelledby="profit-tab">
+        <div class="card">
+          <div class="card-body">
+            <div class="card mb-1">
+              <div class="card-body">
+                <div class="input-group my-2 mx-2 mr-2">
+                  <span class="input-group-text" id=
+                  "searchInputProfitText">Search:</span>
+                  <input type="text" class="form-control" id=
+                  "searchInputProfit" aria-describedby=
+                  "searchInputText">
+                </div>
+                <div id="searchTradeId"></div>
+                <div id="searchProfit"></div>
+              </div>
+            </div>
+            <div class="card mb-1">
+              <div class="card-header">
+                Traders
+              </div>
+              <div class="card-body">
+                <div class="table-responsive table-responsive-sm">
+                  <table class=
+                  "table table-striped table-hover table-sort">
+                    <thead>
+                      <tr>
+                        <th class="numeric-sort">#</th>
+                        <th class="alpha-sort">User</th>
+                        <th class="numeric-sort">TradeIds
+                        (Profit)</th>
+                        <th class="numeric-sort">Profit</th>
+                        <th class="numeric-sort">Gain</th>
+                        <th class="numeric-sort">Loss</th>
+                      </tr>
+                    </thead>
+                    <tbody id="profittablebody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="item-content" role="tabpanel"
+      aria-labelledby="item-tab">
+        <div class="card">
+          <div class="card-body">
+            <div class="card mb-1">
+              <div class="card-body">
+                <div class="input-group my-2 mx-2 mr-2">
+                  <span class="input-group-text" id=
+                  "searchInputItemText">Search:</span> <input type=
+                  "text" class="form-control" id="searchInputItem"
+                  aria-describedby="searchInputText">
+                </div>
+                <div id="searchItemId"></div>
+                <div id="searchItemResults"></div>
+              </div>
+            </div>
+            <div class="card mb-1">
+              <div class="card-header">
+                Items
+              </div>
+              <div class="card-body">
+                <div class="table-responsive table-responsive-sm">
+                  <table class=
+                  "table table-striped table-hover table-sort">
+                    <thead>
+                      <tr>
+                        <th class="numeric-sort">#</th>
+                        <th class="alpha-sort">Item</th>
+                        <th class="numeric-sort">Value</th>
+                        <th class="numeric-sort">Quantity</th>
+                        <th class="numeric-sort">Total</th>
+                        <th class="numeric-sort">Offered</th>
+                        <th class="numeric-sort">Wanted</th>
+                        <th class="numeric-sort">TradeIds
+                        (Percent)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="itemtablebody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p><a class="btn-link text-secondary" onclick="hackToTop()"
+      href="javascript:;" role="button"><svg xmlns=
+      "http://www.w3.org/2000/svg" width="16" height="16" fill=
+      "currentcolor" class="bi bi-house-up-fill" viewbox=
+      "0 0 16 16">
+      <path d=
+      "M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm.354-5.854 1.5 1.5a.5.5 0 0 1-.708.708L13 11.707V14.5a.5.5 0 1 1-1 0v-2.793l-.646.647a.5.5 0 0 1-.708-.707l1.5-1.5a.5.5 0 0 1 .708 0Z"></path>
+      <path d=
+      "M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"></path>
+      <path d=
+      "m8 3.293 4.712 4.712A4.5 4.5 0 0 0 8.758 15H3.5A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"></path>
+      </svg>Back to top</a></p>
+    </div>
+  </div>
+  <script>
+        const buffer = {
+            currentTrades: null,
+            currentStats: null,
+            currentSnapshots: null,
+            currentSnapshotsFiles: null,
+            currentSelectedSnapshot: null,
+            currentCompareToSnapshot: null,
+            currentProfits: null,
+            currentItems: null,
+            timestampTrades: null,
+            timestampSnapshots: null,
+            lastTradeIdSearch: null,
+            lastItemTradeidSearch: null,
+            statsControl: 1,
+            theme: 'dark',
+        }
+        const changeTheme = () => {
+            if (buffer.theme === 'light') {
+                document.children[0].setAttribute('data-bs-theme', 'dark');
+                buffer.theme = 'dark';
+            } else {
+                document.children[0].setAttribute('data-bs-theme', 'light');
+                buffer.theme = 'light';
+            }
+        };
+        const formatNumberWithCommas = (number) => {
+            if (number === undefined || number === null) { return 0; }
+            else {
+                return number.toLocaleString('en-US');
+            }
+        };
+        const hackToTop = () => {
+            document.getElementById('helloworld').scrollIntoView(true);
+        };
+        const formatNumber = (number) => {
+            if (number === undefined) {
+                number = 0;
+            }
+            const absNumber = Math.abs(number);
+            let formattedNumber;
+            if (absNumber >= 1000000) {
+                const million = (absNumber / 1000000).toFixed(1);
+                formattedNumber = million + "mil";
+            } else if (absNumber >= 1000) {
+                const thousand = (absNumber / 1000).toFixed(1);
+                formattedNumber = thousand + "k";
+            } else {
+                formattedNumber = absNumber.toString();
+            }
+            return number < 0 ? "-" + formattedNumber : formattedNumber;
+        };
+        const returnHtmlColorStyle = (rarity) => {
+            if (rarity == 'C') {
+                return 'Aquamarine';
+            } else if (rarity == 'R') {
+                return 'Aqua';
+            } else if (rarity == 'E') {
+                return 'BlueViolet';
+            } else if (rarity == 'L') {
+                return 'Orange';
+            } else if (rarity == 'M') {
+                return 'Firebrick';
+            } else {
+                return 'Pink';
+            }
+        };
+        const capitalizeWords = (str) => {
+            return str.replace(/\b\w/g, (match) => {
+                return match.toUpperCase();
+            });
+        };
+        const returnHtmlItemPopup = (id) => {
+            const delivery = `<span style="color: ${returnHtmlColorStyle(id.rarity)}"><a type="link" data-bs-toggle="tooltip" data-bs-html="true" data-bs-trigger="hover" 
+                                    data-bs-title="<img src='https://kirka.lukeskywalk.com/static/renders/${capitalizeWords(id.name)}-render.png' title='${id.name}' alt='${id.name}'></img>">${id.name}</a></span>`;
+            return delivery;
+        };
+        const returnHtmlItemDesc = (id) => {
+            const delivery = `<span style="color: ${returnHtmlColorStyle(id.rarity)}"><a type="link" data-bs-toggle="tooltip" data-bs-html="true" data-bs-trigger="hover" 
+                                    data-bs-title="<img src='https://kirka.lukeskywalk.com/static/renders/${capitalizeWords(id.name)}-render.png' title='${id.name}' alt='${id.name}'></img>">${id.name}</a></span> x${id.quantity} ${formatNumberWithCommas(id.value)} (${id.percent}%)<br>`;
+            return delivery;
+        };
+        const returnHtmlTradeIdsArray = (tradeids) => {
+            let delivery = ``;
+            const history = tradeids.history;
+            for (let i = 0; i < history.length; i++) {
+                delivery += `<a class="btn-link text-secondary-emphasis" href="javascript:showTradeId('${history[i].tradeId}')">${history[i].tradeId}</a> (${formatNumber(history[i].profit)})${(i < history.length - 1) ? ', ' : ''}`;
+            }
+            return delivery;
+        };
+        const returnHtmlTradeIdsArrayItems = (tradeids, percents) => {
+            let delivery = ``;
+            for (let i = 0; i < tradeids.length; i++) {
+                delivery += `<a class="btn-link text-secondary-emphasis" href="javascript:showTradeIdItem('${tradeids[i]}')">${tradeids[i]}</a> (${formatNumber(percents[i])}%)${(i < tradeids.length - 1) ? ', ' : ''}`;
+            }
+            return delivery;
+        };
+        const returnHtmlTopItemDesc = (nbTop, trade, type) => {
+            const delivery = `
+                    <td>${nbTop}</td>
+                    <td><span style="color: ${returnHtmlColorStyle(trade.rarity)}"><a type="link" data-bs-toggle="tooltip" data-bs-html="true" data-bs-trigger="hover" 
+                                    data-bs-title="<img src='https://kirka.lukeskywalk.com/static/renders/${capitalizeWords(trade.name)}-render.png' title='${trade.name}' alt='${trade.name}'></img>">${trade.name}</a></td>
+                    <td>${(type === 'volume') ? `${formatNumber(trade.quantityTotal)}` : `${formatNumber(trade.value)}`}</td>
+                    `;
+            return delivery;
+        };
+        const returnHtmlTradeId = (tradeid, type) => {
+            const delivery = `<a class="btn-link text-secondary-emphasis" href="javascript:${(type === 'showTradeIdItem') ? 'showTradeIdItem' : 'showTradeId'}('${tradeid}')">${tradeid}</a>`;
+            return delivery;
+        };
+        const returnHtmlTradeDesc = (nb, trade, type, offeredItems, wantedItems) => {
+            const delivery = `
+                    <td>${(type === 'showTradeId' || type === 'showTradeIdItem') ? `${nb + 1}` : `<a class="btn-link text-secondary-emphasis" onclick="hackToTop()" href="javascript:;" role="button">${nb + 1}</a>`}</td>
+                    <td>${new Date(trade.receivedAt).toLocaleTimeString()}</td>
+                    <td>${(type == 'profit') ? `<a class="btn-link text-secondary-emphasis" href="#tradeId${trade.tradeId}">${trade.tradeId}</a>` : (type === 'showTradeId' || type === 'showTradeIdItem') ? `${returnHtmlTradeId(trade.tradeId, type)}` : `${trade.tradeId}`}</td>
+                    <td>${trade.offerer}</td>
+                    <td>${trade.accepter}</td>
+                    <td>${formatNumberWithCommas(trade.trade.offered.total + trade.trade.wanted.total)}</td>
+                    <td>${formatNumberWithCommas(trade.trade.offered.total)}</td>
+                    <td>${offeredItems}</td>
+                    <td>${formatNumberWithCommas(trade.trade.wanted.total)}</td>
+                    <td>${wantedItems}</td>
+                    <td>${formatNumberWithCommas(trade.difference)}</td>
+                    <td>${trade.trade.ratio}</td>
+                `;
+            return delivery;
+        };
+        const returnHtmlTradeDescTable = (nb, results, resultDiv, type) => {
+            for (let i = results.length - 1; i > -1; i--) {
+                const row = document.createElement('tr');
+                const trade = results[i];
+                let offeredItems = ``;
+                let wantedItems = ``;
+                for (let o = 0; o < trade.trade.offered.items.length; o++) {
+                    const oi = trade.trade.offered.items[o];
+                    offeredItems = offeredItems + returnHtmlItemDesc(oi);
+                }
+                for (let w = 0; w < trade.trade.wanted.items.length; w++) {
+                    const wi = trade.trade.wanted.items[w];
+                    wantedItems = wantedItems + returnHtmlItemDesc(wi);
+                }
+                row.innerHTML = returnHtmlTradeDesc(i, trade, type, offeredItems, wantedItems);
+                resultDiv.appendChild(row);
+                nb++;
+            }
+        };
+        const searchResultTable = (tableDiv) => {
+            const delivery = `<div class="table-responsive table-responsive-sm">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Timestamp</th>
+                            <th>Trade ID</th>
+                            <th>Offerer</th>
+                            <th>Accepter</th>
+                            <th>Total</th>
+                            <th>Offer Total</th>
+                            <th>Offer Items</th>
+                            <th>Want Total</th>
+                            <th>Want Items</th>
+                            <th>Difference</th>
+                            <th>Ratio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="${tableDiv}">
+                    </tbody>
+                </table>
+                </div>`;
+            return delivery;
+        };
+        const searchResultProfitTable = (tableDiv) => {
+            const delivery = `<div class="table-responsive table-responsive-sm">
+                            <table class="table table-striped table-hover table-sort">
+                                <thead>
+                                    <tr>
+                                        <th class="numeric-sort">#</th>
+                                        <th class="alpha-sort">User</th>
+                                        <th class="numeric-sort">TradeIds (Profit)</th>
+                                        <th class="numeric-sort">Profit</th>
+                                        <th class="numeric-sort">Gain</th>
+                                        <th class="numeric-sort">Loss</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="${tableDiv}">
+                                </tbody>
+                            </table>
+                        </div>`;
+            return delivery;
+        };
+        const searchResultItemTable = (tableDiv) => {
+            const delivery = `<div class="table-responsive table-responsive-sm">
+                            <table class="table table-striped table-hover table-sort">
+                                <thead>
+                                    <tr>
+                                        <th class="numeric-sort">#</th>
+                                        <th class="alpha-sort">Item</th>
+                                        <th class="numeric-sort">Value</th>
+                                        <th class="numeric-sort">Quantity</th>
+                                        <th class="numeric-sort">Total</th>
+                                        <th class="numeric-sort">Offered</th>
+                                        <th class="numeric-sort">Wanted</th>
+                                        <th class="numeric-sort">TradeIds (Percent)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="${tableDiv}">
+                                </tbody>
+                            </table>
+                        </div>`;
+            return delivery;
+        };
+        const fetchJsonData = async (url) => {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Error fetching data from ${url}`);
+            }
+            if (url === './tradehistory/snapshots.json') {
+                buffer.timestampSnapshot = response.headers.get('last-modified');
+                document.getElementById('timestampSnapshotsDiv').textContent = 'Snapshots modified at: ' + new Date(buffer.timestampSnapshot).toLocaleTimeString();
+            } else if (url === './tradehistory/dailyTrades.json') {
+                buffer.timestampTrades = response.headers.get('last-modified');
+                document.getElementById('timestampTradesDiv').textContent = 'Current trades modified at: ' + new Date(buffer.timestampTrades).toLocaleTimeString();
+            }
+            return response.json();
+        };
+        function getDailyTradeDatepart() {
+            const currentDates = getNextCurrentDateYYYYMMDD();
+            return [currentDates, ''];
+        };
+        function getNextCurrentDateYYYYMMDD() {
+            const date = new Date();
+            date.setDate(date.getDate() + 1);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}${month}${day}`;
+        };
+        function convertFilenameToDate(filename) {
+            if (!filename.endsWith('.json')) {
+                throw new Error("Invalid file format. The filename must end with .json");
+            }
+            const dateTimeString = filename.slice(0, -5);
+            const [datePart, timePart] = (dateTimeString === 'dailyTrades') ? getDailyTradeDatepart() : dateTimeString.split('_');
+            if (datePart.length !== 8) {
+                throw new Error("Invalid date format in filename.");
+            }
+            const year = datePart.slice(0, 4);
+            const month = datePart.slice(4, 6);
+            const day = datePart.slice(6, 8);
+            return `${year}-${month}-${day}`;
+        };
+        function getCurrentYearAndMonth() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            return { year, month };
+        };
+        let selectedDate = null;
+        const tempCurrentDate = getCurrentYearAndMonth();
+        let currentYear = tempCurrentDate.year;
+        let currentMonth = tempCurrentDate.month;
+        /*function getDatesInRange(startDateIndex, endDateIndex, dates) {
+            if (startDateIndex < 0 || endDateIndex >= dates.length || startDateIndex > endDateIndex) {
+                throw new Error("Invalid indices provided.");
+            }
+            return dates.slice(startDateIndex, endDateIndex + 1);
+        };*/
+        function generateCalendar(year, month, validDates) {
+            const calendarElement = document.getElementById('calendar');
+            calendarElement.innerHTML = '';
+            const monthYearElement = document.getElementById('monthYear');
+            monthYearElement.textContent = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            for (const weekday of weekdays) {
+                const weekdayElement = document.createElement('div');
+                weekdayElement.textContent = weekday;
+                calendarElement.appendChild(weekdayElement);
+            }
+            for (let i = 0; i < firstDay; i++) {
+                const blankDay = document.createElement('div');
+                calendarElement.appendChild(blankDay);
+            }
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                if (validDates.includes(fullDate)) {
+                    dayElement.classList.add('selectable');
+                    dayElement.classList.add('text-secondary')
+                    if (selectedDate === fullDate) {
+                        dayElement.classList.add('selected');
+                    }
+                    dayElement.addEventListener('click', () => {
+                        const previousSelected = document.querySelector('.calendar-day.selected');
+                        if (previousSelected) {
+                            previousSelected.classList.remove('selected');
+                        }
+                        selectedDate = fullDate;
+                        dayElement.classList.add('selected');
+                        const indexOfDateFile = buffer.currentSnapshots.indexOf(fullDate);
+                        displayDailyTrades(buffer.currentSnapshotsFiles[indexOfDateFile]);
+                    });
+                }
+                calendarElement.appendChild(dayElement);
+            }
+            const fakeDateElement = document.createElement('div');
+            fakeDateElement.className = 'calendar-day fake-date selectable';
+            fakeDateElement.textContent = 'now';
+            fakeDateElement.addEventListener('click', () => {
+                const previousSelected = document.querySelector('.calendar-day.selected');
+                if (previousSelected) {
+                    previousSelected.classList.remove('selected');
+                }
+                selectedDate = null;
+                fakeDateElement.classList.add('selected');
+                displayDailyTrades('dailyTrades.json');
+            });
+            calendarElement.appendChild(fakeDateElement);
+        };
+        function changeMonth(delta) {
+            currentMonth += delta;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear -= 1;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear += 1;
+            }
+            generateCalendar(currentYear, currentMonth, buffer.currentSnapshots);
+        };
+        document.getElementById('prevMonth').addEventListener('click', () => changeMonth(-1));
+        document.getElementById('nextMonth').addEventListener('click', () => changeMonth(1));
+        const populateSelector = async () => {
+            const snapshots = await fetchJsonData('./tradehistory/snapshots.json');
+            buffer.currentSnapshots = [];
+            buffer.currentSnapshotsFiles = [];
+            snapshots.forEach((file) => {
+                const convertedFilenameDate = convertFilenameToDate(file);
+                buffer.currentSnapshots.push(convertedFilenameDate);
+                buffer.currentSnapshotsFiles.push(file);
+            });
+            generateCalendar(currentYear, currentMonth, buffer.currentSnapshots);
+        };
+        const combineMostTradedItems = (mostOfferedItemName, mostWantedItemName) => {
+            const mostTradedItem = [];
+            const itemMap = new Map();
+            mostOfferedItemName.forEach(item => {
+                if (itemMap.has(item.name)) {
+                    itemMap.get(item.name).quantityTotal += item.quantityTotal;
+                } else {
+                    itemMap.set(item.name, { name: item.name, quantityTotal: item.quantityTotal, rarity: item.rarity });
+                }
+            });
+            mostWantedItemName.forEach(item => {
+                if (itemMap.has(item.name)) {
+                    itemMap.get(item.name).quantityTotal += item.quantityTotal;
+                } else {
+                    itemMap.set(item.name, { name: item.name, quantityTotal: item.quantityTotal, rarity: item.rarity });
+                }
+            });
+            itemMap.forEach(value => {
+                mostTradedItem.push(value);
+            });
+            mostTradedItem.sort((a, b) => b.quantityTotal - a.quantityTotal);
+            return mostTradedItem;
+        };
+        const convertTo24Hour = (timeStr) => {
+            const [time, modifier] = timeStr.split(' ');
+            let [hours, minutes, seconds] = time.split(':');
+            hours = parseInt(hours, 10);
+            if (modifier === 'PM' && hours !== 12) {
+                hours += 12;
+            }
+            if (modifier === 'AM' && hours === 12) {
+                hours = 0;
+            }
+            return `${hours.toString().padStart(2, '0')}:${minutes}:${seconds}`;
+        };
+        const compareTimes = (a, b) => {
+            const timeA = convertTo24Hour(a.timestamp);
+            const timeB = convertTo24Hour(b.timestamp);
+            return timeA.localeCompare(timeB);
+        };
+        const calculateTotalProfitGainLoss = (statsOfTheDay) => {
+            const delivery = {
+                gainLoss: 0,
+            }
+            const profitLoss = statsOfTheDay.profitLoss;
+            profitLoss.forEach((trader) => {
+                delivery.gainLoss += trader.gain;
+            })
+            return delivery;
+        };
+        const calculateProfitLossDifference = (statsOfTheDay) => {
+            const result = [];
+            const usernameMap = new Map();
+            statsOfTheDay.biggestTrader.forEach(trader => {
+                const { username, profit, tradeIds } = trader;
+                if (usernameMap.has(username)) {
+                    const entry = usernameMap.get(username);
+                    entry.profit += profit;
+                    entry.tradeIds = [...entry.tradeIds, ...tradeIds];
+                } else {
+                    usernameMap.set(username, { username, profit, loss: 0, tradeIds: [...tradeIds] });
+                }
+            });
+            statsOfTheDay.worstTrader.forEach(trader => {
+                const { username, loss, tradeIds } = trader;
+                if (usernameMap.has(username)) {
+                    const entry = usernameMap.get(username);
+                    entry.loss += loss;
+                    entry.tradeIds = [...entry.tradeIds, ...tradeIds];
+                } else {
+                    usernameMap.set(username, { username, profit: 0, loss, tradeIds: [...tradeIds] });
+                }
+            });
+            usernameMap.forEach((value, key) => {
+                const { profit, loss } = value;
+                const profitLossDifference = profit - loss;
+                result.push({
+                    username: key,
+                    profitLossDifference,
+                    tradeIds: value.tradeIds,
+                    gain: value.profit,
+                    loss: value.loss
+                });
+            });
+            return result;
+        };
+        const gatherTradeStatistics = (trades) => {
+            const statsOfTheDay = {
+                mostExpensiveTradeTotal: [],
+                mostExpensiveItemPrice: [],
+                mostTradedItem: [],
+                mostProfitableTradeDifference: [],
+                biggestTrader: [],
+                worstTrader: [],
+                mostOfferedItemName: [],
+                mostWantedItemName: [],
+                profitLoss: [],
+                userTradesAndHistory: [],
+                globalStats: {
+                    totalTraded: null,
+                    numberOfTrades: null,
+                    numberOfTraders: null,
+                    quantityTraded: null,
+                    gainsLosses: null,
+                }
+            };
+            const getTop10ByTotalValue = (trades) => {
+                return trades
+                    .sort((a, b) => (b.trade.offered.total + b.trade.wanted.total) - (a.trade.offered.total + a.trade.wanted.total))
+                    .map(trade => ({
+                        tradeId: trade.tradeId,
+                        offeredTotal: trade.trade.offered.total,
+                        wantedTotal: trade.trade.wanted.total,
+                        total: trade.trade.offered.total + trade.trade.wanted.total,
+                    }));
+            };
+            statsOfTheDay.mostExpensiveTradeTotal = getTop10ByTotalValue(trades);
+            trades.forEach(trade => {
+                const { tradeId, difference, offerer, accepter } = trade;
+                const offeredTotal = trade.trade.offered.total;
+                const wantedTotal = trade.trade.wanted.total;
+                statsOfTheDay.globalStats.numberOfTrades += 1;
+                statsOfTheDay.globalStats.totalTraded += offeredTotal + wantedTotal;
+                trade.trade.offered.items.forEach(item => {
+                    statsOfTheDay.globalStats.quantityTraded += Number(item.quantity);
+                    const expensiveItemPrice = statsOfTheDay.mostExpensiveItemPrice.find(
+                        expensiveItem => expensiveItem.name === item.name
+                    );
+                    if (expensiveItemPrice) {
+                        if (!expensiveItemPrice.tradeIds.includes(tradeId)) {
+                            expensiveItemPrice.tradeIds.push(tradeId);
+                            expensiveItemPrice.percents.push(item.percent);
+                        }
+                    } else {
+                        statsOfTheDay.mostExpensiveItemPrice.push({
+                            tradeIds: [tradeId],
+                            name: item.name,
+                            value: item.value,
+                            rarity: item.rarity,
+                            percents: [item.percent]
+                        });
+                    }
+                    const offeredItem = statsOfTheDay.mostOfferedItemName.find(i => i.name === item.name);
+                    if (offeredItem) {
+                        offeredItem.quantityTotal += parseInt(item.quantity, 10);
+                    } else {
+                        statsOfTheDay.mostOfferedItemName.push({
+                            name: item.name,
+                            rarity: item.rarity,
+                            value: item.value,
+                            quantityTotal: parseInt(item.quantity, 10),
+                        });
+                    }
+                });
+                trade.trade.wanted.items.forEach(item => {
+                    statsOfTheDay.globalStats.quantityTraded += Number(item.quantity);
+                    const existingItem = statsOfTheDay.mostExpensiveItemPrice.find(
+                        expensiveItem => expensiveItem.name === item.name
+                    );
+                    if (existingItem) {
+                        if (!existingItem.tradeIds.includes(tradeId)) {
+                            existingItem.tradeIds.push(tradeId);
+                            existingItem.percents.push(tradeId);
+                        }
+                    } else {
+                        statsOfTheDay.mostExpensiveItemPrice.push({
+                            tradeIds: [tradeId],
+                            name: item.name,
+                            value: item.value,
+                            rarity: item.rarity,
+                            percents: [item.percent]
+                        });
+                    }
+                    const wantedItem = statsOfTheDay.mostWantedItemName.find(i => i.name === item.name);
+                    if (wantedItem) {
+                        wantedItem.quantityTotal += parseInt(item.quantity, 10);
+                    } else {
+                        statsOfTheDay.mostWantedItemName.push({
+                            name: item.name,
+                            rarity: item.rarity,
+                            value: item.value,
+                            quantityTotal: parseInt(item.quantity, 10),
+                        });
+                    }
+                });
+                statsOfTheDay.mostProfitableTradeDifference.push({
+                    tradeId,
+                    difference,
+                    offeredTotal,
+                    wantedTotal,
+                });
+                const profiterVsShortstraw = (offeredTotal > wantedTotal)
+                const profiter = profiterVsShortstraw ? accepter : offerer;
+                const profiterBool = profiterVsShortstraw ? 'accepter' : 'offerer';
+                const shortStraw = profiterVsShortstraw ? offerer : accepter;
+                const shortStrawBool = profiterVsShortstraw ? 'offerer' : 'accepter';
+                const profitingTrader = statsOfTheDay.biggestTrader.find(
+                    trader => trader.username === profiter
+                );
+                const profitingTraderHistory = statsOfTheDay.userTradesAndHistory.find(trader => trader.username === profiter);
+                const shortstrawTraderHistory = statsOfTheDay.userTradesAndHistory.find(trader => trader.username === shortStraw);
+                if (profitingTrader) {
+                    profitingTrader.tradeIds.push(tradeId);
+                    profitingTrader.totalValue += (profiterBool == 'accepter') ? wantedTotal : offeredTotal;
+                    profitingTrader.profit += difference;
+                } else {
+                    statsOfTheDay.biggestTrader.push({
+                        username: profiter,
+                        tradeIds: [tradeId],
+                        totalValue: (profiterBool == 'accepter') ? wantedTotal : offeredTotal,
+                        profit: difference
+                    })
+                }
+                if (profitingTraderHistory) {
+                    const delivery = {
+                        tradeId: tradeId,
+                        profit: difference,
+                        timestamp: new Date(trade.receivedAt).toLocaleTimeString()
+                    }
+                    profitingTraderHistory.history.push(delivery);
+                    profitingTraderHistory.tradeIds.push(tradeId);
+                    profitingTraderHistory.profit.push(difference);
+                    profitingTraderHistory.timestamps.push(new Date(trade.receivedAt).toLocaleTimeString())
+                } else {
+                    const delivery = {
+                        tradeId: tradeId,
+                        profit: difference,
+                        timestamp: new Date(trade.receivedAt).toLocaleTimeString()
+                    }
+                    statsOfTheDay.userTradesAndHistory.push({
+                        username: profiter,
+                        tradeIds: [tradeId],
+                        profit: [difference],
+                        timestamps: [new Date(trade.receivedAt).toLocaleTimeString()],
+                        history: [delivery]
+                    })
+                }
+                const shortStrawTrader = statsOfTheDay.worstTrader.find(
+                    trader => trader.username === shortStraw
+                );
+                if (shortStrawTrader) {
+                    shortStrawTrader.tradeIds.push(tradeId);
+                    shortStrawTrader.totalValue += (shortStrawBool == 'accepter') ? wantedTotal : offeredTotal;
+                    shortStrawTrader.loss += difference;
+                } else {
+                    statsOfTheDay.worstTrader.push({
+                        username: shortStraw,
+                        tradeIds: [tradeId],
+                        totalValue: (shortStrawBool == 'accepter') ? wantedTotal : offeredTotal,
+                        loss: difference
+                    })
+                }
+                if (shortstrawTraderHistory) {
+                    const delivery = {
+                        tradeId: tradeId,
+                        profit: difference * -1,
+                        timestamp: new Date(trade.receivedAt).toLocaleTimeString()
+                    }
+                    shortstrawTraderHistory.history.push(delivery);
+                    shortstrawTraderHistory.tradeIds.push(tradeId);
+                    shortstrawTraderHistory.profit.push(difference * -1);
+                    shortstrawTraderHistory.timestamps.push(new Date(trade.receivedAt).toLocaleTimeString())
+                } else {
+                    const delivery = {
+                        tradeId: tradeId,
+                        profit: difference * -1,
+                        timestamp: new Date(trade.receivedAt).toLocaleTimeString()
+                    }
+                    statsOfTheDay.userTradesAndHistory.push({
+                        username: shortStraw,
+                        tradeIds: [tradeId],
+                        profit: [difference * -1],
+                        timestamps: [new Date(trade.receivedAt).toLocaleTimeString()],
+                        history: [delivery]
+                    })
+                }
+            });
+            statsOfTheDay.profitLoss = calculateProfitLossDifference(statsOfTheDay);
+            statsOfTheDay.globalStats.numberOfTraders = statsOfTheDay.profitLoss.length;
+            statsOfTheDay.profitLoss.sort((a, b) => b.profitLossDifference - a.profitLossDifference);
+            statsOfTheDay.mostExpensiveItemPrice.sort((a, b) => b.value - a.value);
+            statsOfTheDay.mostProfitableTradeDifference.sort((a, b) => b.difference - a.difference);
+            statsOfTheDay.mostOfferedItemName.sort((a, b) => b.quantityTotal - a.quantityTotal);
+            statsOfTheDay.mostWantedItemName.sort((a, b) => b.quantityTotal - a.quantityTotal);
+            statsOfTheDay.biggestTrader.sort((a, b) => b.profit - a.profit);
+            statsOfTheDay.worstTrader.sort((a, b) => b.loss - a.loss);
+            statsOfTheDay.mostTradedItem = combineMostTradedItems(statsOfTheDay.mostOfferedItemName, statsOfTheDay.mostWantedItemName);
+            const tempTotalProfitGainLoss = calculateTotalProfitGainLoss(statsOfTheDay);
+            statsOfTheDay.userTradesAndHistory.forEach((trader) => {
+                trader.history.sort(compareTimes)
+            })
+            statsOfTheDay.globalStats.gainsLosses = tempTotalProfitGainLoss.gainLoss;
+            buffer.currentStats = statsOfTheDay;
+            document.getElementById("statsTrades").innerText = `${formatNumberWithCommas(statsOfTheDay.globalStats?.numberOfTrades)}`;
+            document.getElementById("statsTraded").innerText = `${formatNumberWithCommas(statsOfTheDay.globalStats?.totalTraded)}`;
+            document.getElementById("statsQuantity").innerText = `${formatNumberWithCommas(statsOfTheDay.globalStats?.quantityTraded)}`;
+            document.getElementById("statsTraders").innerText = `${formatNumberWithCommas(statsOfTheDay.globalStats?.numberOfTraders)}`;
+            document.getElementById("statsGainLoss").innerText = `${formatNumberWithCommas(statsOfTheDay.globalStats?.gainsLosses)}`;
+            document.getElementById("statsItems").innerText = `${formatNumberWithCommas(statsOfTheDay.mostTradedItem?.length)}`;
+            return statsOfTheDay;
+        };
+        const showTradeId = (id) => {
+            const searchTradeIdsResult = document.getElementById('searchTradeId');
+            if (id === buffer.lastTradeIdSearch) {
+                searchTradeIdsResult.innerHTML = '';
+                buffer.lastTradeIdSearch = null;
+            } else {
+                buffer.lastTradeIdSearch = id;
+                const results = searchTrades(buffer.currentTrades, id);
+                searchTradeIdsResult.innerHTML = searchResultTable('searchTradeIdTableBody');
+                const searchResultTableBody2 = document.getElementById('searchTradeIdTableBody');
+                returnHtmlTradeDescTable(1, results, searchResultTableBody2, 'showTradeId');
+                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+            }
+            hackToTop();
+        };
+        const showTradeIdItem = (id) => {
+            const searchTradeIdsResult = document.getElementById('searchItemId');
+            if (id === buffer.lastItemTradeidSearch) {
+                searchTradeIdsResult.innerHTML = '';
+                buffer.lastItemTradeidSearch = null;
+            } else {
+                buffer.lastItemTradeidSearch = id;
+                const results = searchTrades(buffer.currentTrades, id);
+                searchTradeIdsResult.innerHTML = searchResultTable('searchTradeIdItemTableBody');
+                const searchResultTableBody2 = document.getElementById('searchTradeIdItemTableBody');
+                returnHtmlTradeDescTable(1, results, searchResultTableBody2, 'showTradeIdItem');
+                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+            }
+            hackToTop();
+        };
+        const populateItems = (currentStats) => {
+            const delivery = [];
+            const profititemtable = document.getElementById('itemtablebody');
+            const tophates = [profititemtable];
+            tophates.forEach((tablez => {
+                if (tablez) {
+                    while (tablez.firstChild) {
+                        tablez.removeChild(tablez.firstChild);
+                    }
+                }
+            }))
+            let nb = 1;
+            for (let i = 0; i < currentStats.mostExpensiveItemPrice.length; i++) {
+                const row = document.createElement('tr');
+                const trade = currentStats.mostExpensiveItemPrice[i];
+                const offeredItem = currentStats.mostOfferedItemName.find(item => item.name === trade.name);
+                const wantedItem = currentStats.mostWantedItemName.find(item => item.name === trade.name);
+                const tradedItem = currentStats.mostTradedItem.find(item => item.name === trade.name);
+                row.innerHTML = `
+                    <td><a class="btn-link text-secondary-emphasis" onclick="hackToTop()" href="javascript:;" role="button">${nb}</a></td>
+                    <td>${returnHtmlItemPopup(trade)}</td>
+                    <td>${formatNumberWithCommas(trade.value)}</td>
+                    <td>${formatNumberWithCommas(tradedItem?.quantityTotal)}</td>
+                    <td>${formatNumberWithCommas(tradedItem?.quantityTotal * trade.value)}</td>
+                    <td>${formatNumberWithCommas(offeredItem?.quantityTotal)}</td>
+                    <td>${formatNumberWithCommas(wantedItem?.quantityTotal)}</td>
+                    <td>${returnHtmlTradeIdsArrayItems(trade?.tradeIds, trade?.percents)}</td>
+                    `;
+                delivery.push({
+                    name: trade.name,
+                    rarity: trade.rarity,
+                    value: trade.value,
+                    quantity: tradedItem?.quantityTotal,
+                    total: tradedItem?.quantityTotal * trade.value,
+                    offered: offeredItem?.quantityTotal,
+                    wanted: wantedItem?.quantityTotal,
+                    tradeIds: trade?.tradeIds,
+                    percents: trade?.percents
+                })
+                nb++;
+                profititemtable.appendChild(row);
+            }
+            return delivery;
+        };
+        const populateProfit = (currentStats) => {
+            const delivery = [];
+            const profittablebody = document.getElementById('profittablebody');
+            const tophates = [profittablebody];
+            tophates.forEach((tablez => {
+                if (tablez) {
+                    while (tablez.firstChild) {
+                        tablez.removeChild(tablez.firstChild);
+                    }
+                }
+            }))
+            let nb = 1;
+            for (let i = 0; i < currentStats.profitLoss.length; i++) {
+                const row = document.createElement('tr');
+                const trade = currentStats.profitLoss[i];
+                const traderTradeHistory = currentStats.userTradesAndHistory.find(trader => trader.username === trade.username)
+                row.innerHTML = `
+                    <td><a class="btn-link text-secondary-emphasis" onclick="hackToTop()" href="javascript:;" role="button">${nb}</a></td>
+                    <td>${trade.username}</td>
+                    <td>${returnHtmlTradeIdsArray(traderTradeHistory)}</td>
+                    <td>${formatNumberWithCommas(trade.profitLossDifference)}</td>
+                    <td>${formatNumberWithCommas(trade.gain)}</td>
+                    <td>${formatNumberWithCommas(trade.loss)}</td>
+                    `;
+                delivery.push({
+                    username: trade.username,
+                    tradeIds: traderTradeHistory.history,
+                    profit: trade.profitLossDifference,
+                    gain: trade.gain,
+                    loss: trade.loss
+                })
+                nb++;
+                profittablebody.appendChild(row);
+            }
+            return delivery;
+        };
+        const populateTop8 = (currentStats) => {
+            const expensive = document.getElementById('dailyTop8Expensive');
+            const expensiveItem = document.getElementById('dailyTop8ExpensiveItem');
+            const tradedItem = document.getElementById('dailyTop8TradedItem');
+            const biasedTrade = document.getElementById('dailyTop8BiasedTrade');
+            const offeredItem = document.getElementById('dailyTop8OfferedItem');
+            const wantedItem = document.getElementById('dailyTop8WantedItem');
+            const gainer = document.getElementById('dailyTop8Gainer');
+            const loser = document.getElementById('dailyTop8Loser');
+            const tophates = [expensive, expensiveItem, tradedItem, biasedTrade, offeredItem, wantedItem, gainer, loser];
+            tophates.forEach((tablez => {
+                if (tablez) {
+                    while (tablez.firstChild) {
+                        tablez.removeChild(tablez.firstChild);
+                    }
+                }
+            }))
+            let nb = 1;
+            const tempExpensive = (currentStats.mostExpensiveTradeTotal.length > 8) ? 8 : currentStats.mostExpensiveTradeTotal.length;
+            for (let i = 0; i < tempExpensive; i++) {
+                const row = document.createElement('tr');
+                const trade = currentStats.mostExpensiveTradeTotal[i];
+                row.innerHTML = `
+                    <td>${nb}</td>
+                    <td><a class="btn-link text-secondary-emphasis" href='#tradeId${trade.tradeId}'>${trade.tradeId}</a></td>
+                    <td>${formatNumber(trade.offeredTotal)}</td>
+                    <td>${formatNumber(trade.wantedTotal)}</td>
+                    <td>${formatNumber(trade.total)}</td>
+                    `;
+                nb++;
+                expensive.appendChild(row);
+            }
+            nb = 1;
+            const tempExpensiveItem = (currentStats.mostExpensiveItemPrice.length > 8) ? 8 : currentStats.mostExpensiveItemPrice.length;
+            for (let i = 0; i < tempExpensiveItem; i++) {
+                const row = document.createElement('tr');
+                const trade = currentStats.mostExpensiveItemPrice[i];
+                row.innerHTML = returnHtmlTopItemDesc(nb, trade, 'value');
+                nb++;
+                expensiveItem.appendChild(row);
+            }
+            nb = 1;
+            const tempTraded = (currentStats.mostTradedItem.length > 8) ? 8 : currentStats.mostTradedItem.length;
+            for (let i = 0; i < tempTraded; i++) {
+                const row = document.createElement('tr');
+                const trade = currentStats.mostTradedItem[i];
+                row.innerHTML = returnHtmlTopItemDesc(nb, trade, 'volume');
+                nb++;
+                tradedItem.appendChild(row);
+            }
+            nb = 1;
+            const tempProfitDif = (currentStats.mostProfitableTradeDifference.length > 8) ? 8 : currentStats.mostProfitableTradeDifference.length;
+            for (let i = 0; i < tempProfitDif; i++) {
+                const row = document.createElement('tr');
+                const trade = currentStats.mostProfitableTradeDifference[i];
+                row.innerHTML = `
+                    <td>${nb}</td>
+                    <td><a class="btn-link text-secondary-emphasis" href='#tradeId${trade.tradeId}'>${trade.tradeId}</a></td>
+                    <td>${formatNumber(trade.offeredTotal)}</td>
+                    <td>${formatNumber(trade.wantedTotal)}</td>
+                    <td>${formatNumber(trade.difference)}</td>
+                    `;
+                nb++;
+                biasedTrade.appendChild(row);
+            }
+            nb = 1;
+            const tempOffered = (currentStats.mostOfferedItemName.length > 8) ? 8 : currentStats.mostOfferedItemName.length;
+            for (let i = 0; i < tempOffered; i++) {
+                const row = document.createElement('tr');
+                const trade = currentStats.mostOfferedItemName[i];
+                row.innerHTML = returnHtmlTopItemDesc(nb, trade, 'volume');
+                nb++;
+                offeredItem.appendChild(row);
+            }
+            nb = 1;
+            const tempWanted = (currentStats.mostWantedItemName.length > 8) ? 8 : currentStats.mostWantedItemName.length;
+            for (let i = 0; i < tempWanted; i++) {
+                const row = document.createElement('tr');
+                const trade = currentStats.mostWantedItemName[i];
+                row.innerHTML = returnHtmlTopItemDesc(nb, trade, 'volume');
+                nb++;
+                wantedItem.appendChild(row);
+            }
+            nb = 1;
+            const tempGainer = (currentStats.profitLoss.length > 8) ? 8 : currentStats.profitLoss.length - 1;
+            for (let i = 0; i < tempGainer; i++) {
+                const row = document.createElement('tr');
+                const trade = currentStats.profitLoss[i];
+                if (trade.profitLossDifference <= 0) {
+                    return;
+                }
+                row.innerHTML = `
+                    <td>${nb}</td>
+                    <td>${trade.username}</td>
+                    <td>${formatNumber(trade.profitLossDifference)}</td>
+                    `;
+                nb++;
+                gainer.appendChild(row);
+            }
+            nb = 1;
+            currentStats.profitLoss.sort((a, b) => a.profitLossDifference - b.profitLossDifference);
+            const tempLoser = (currentStats.profitLoss.length > 8) ? 8 : currentStats.profitLoss.length - 1;
+            for (let i = 0; i < tempLoser; i++) {
+                const row = document.createElement('tr');
+                const trade = currentStats.profitLoss[i];
+                if (trade.profitLossDifference >= 0) {
+                    return;
+                }
+                row.innerHTML = `
+                    <td>${nb}</td>
+                    <td>${trade.username}</td>
+                    <td>${formatNumber(trade.profitLossDifference)}</td>
+                    `;
+                nb++;
+                loser.appendChild(row);
+            }
+            currentStats.profitLoss.sort((a, b) => b.profitLossDifference - a.profitLossDifference);
+        };
+        const displayDailyTrades = async (selectedSnapshot) => {
+            let selectedSnapshotTemp;
+            if (!selectedSnapshot) {
+                selectedSnapshotTemp = 'dailyTrades.json';
+            } else {
+                selectedSnapshotTemp = selectedSnapshot;
+            }
+            const dailyTrades = await fetchJsonData(`./tradehistory/${selectedSnapshotTemp}`);
+            buffer.currentTrades = dailyTrades;
+            const tableBody = document.getElementById('dailyTradesTableBody');
+            if (tableBody) {
+                while (tableBody.firstChild) {
+                    tableBody.removeChild(tableBody.firstChild);
+                }
+            }
+            let nb = 1;
+            for (let i = dailyTrades.length - 1; i > -1; i--) {
+                const row = document.createElement('tr');
+                const trade = dailyTrades[i];
+                row.id = `tradeId${trade.tradeId}`;
+                let offeredItems = ``;
+                let wantedItems = ``;
+                for (let o = 0; o < trade.trade.offered.items.length; o++) {
+                    const oi = trade.trade.offered.items[o];
+                    offeredItems = offeredItems + returnHtmlItemDesc(oi);
+                }
+                for (let w = 0; w < trade.trade.wanted.items.length; w++) {
+                    const wi = trade.trade.wanted.items[w];
+                    wantedItems = wantedItems + returnHtmlItemDesc(wi);
+                }
+                row.innerHTML = returnHtmlTradeDesc(i, trade, 'trades', offeredItems, wantedItems);
+                tableBody.appendChild(row);
+                nb++;
+            }
+            const testStats = gatherTradeStatistics(dailyTrades);
+            populateTop8(testStats);
+            const testProfits = populateProfit(testStats);
+            const testItems = populateItems(testStats);
+            buffer.currentItems = testItems;
+            buffer.currentProfits = testProfits;
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        };
+        const searchInput = document.getElementById('searchInput');
+        const searchInputProfit = document.getElementById('searchInputProfit');
+        const searchInputItem = document.getElementById('searchInputItem');
+        const searchTrades = (trades, query) => {
+            const lowerCaseQuery = query.toLowerCase();
+            const result = trades.filter((trade) => {
+                const offererMatch = trade.offerer.toLowerCase().includes(lowerCaseQuery);
+                const accepterMatch = trade.accepter.toLowerCase().includes(lowerCaseQuery);
+                const tradeIdMatch = trade.tradeId.toString().includes(lowerCaseQuery);
+                const offeredItemMatch = trade.trade.offered.items.some((item) =>
+                    item.name.toLowerCase().includes(lowerCaseQuery)
+                );
+                const wantedItemMatch = trade.trade.wanted.items.some((item) =>
+                    item.name.toLowerCase().includes(lowerCaseQuery)
+                );
+                return (
+                    offererMatch ||
+                    accepterMatch ||
+                    tradeIdMatch ||
+                    offeredItemMatch ||
+                    wantedItemMatch
+                );
+            });
+            return result;
+        };
+        const searchItems = (searchTerm, data)=> {
+            const lowerCaseTerm = String(searchTerm).toLowerCase();
+            const results = data.filter((item) => {
+                const nameMatch = item.name.toLowerCase().includes(lowerCaseTerm);
+                const tradeIdMatch = item.tradeIds.some(
+                    (tradeId) => String(tradeId).toLowerCase().includes(lowerCaseTerm)
+                );
+                return nameMatch || tradeIdMatch;
+            });
+            return results;
+        };
+        const searchProfits = (searchTerm, data) => {
+            const lowerCaseTerm = String(searchTerm).toLowerCase();
+            const results = data.filter((item) => {
+                const usernameMatch = item.username.toLowerCase().includes(lowerCaseTerm);
+                const tradeIdMatch = item.tradeIds.some(
+                    (trade) => String(trade.tradeId).includes(lowerCaseTerm)
+                );
+                return usernameMatch || tradeIdMatch;
+            });
+            return results;
+        };
+        searchInputItem.addEventListener('input', () => {
+            const searchTerm = searchInputItem.value.toLowerCase();
+            const searchResults = document.getElementById('searchItemResults');
+            if (searchTerm === '') {
+                searchResults.innerHTML = '';
+            } else {
+                const results = searchItems(searchTerm, buffer.currentItems);
+                searchResults.innerHTML = searchResultItemTable('searchItemResultsBody');
+                const searchResultTableBody = document.getElementById('searchItemResultsBody');
+                let nb = 1;
+            for (let i = 0; i < results.length; i++) {
+                const row = document.createElement('tr');
+                const trade = results[i];
+                buffer.currentStats.mo
+                const offeredItem = buffer.currentStats.mostOfferedItemName.find(item => item.name === trade.name);
+                const wantedItem = buffer.currentStats.mostWantedItemName.find(item => item.name === trade.name);
+                const tradedItem = buffer.currentStats.mostTradedItem.find(item => item.name === trade.name);
+                row.innerHTML = `
+                    <td><a class="btn-link text-secondary-emphasis" onclick="hackToTop()" href="javascript:;" role="button">${nb}</a></td>
+                    <td>${returnHtmlItemPopup(trade)}</td>
+                    <td>${formatNumberWithCommas(trade.value)}</td>
+                    <td>${formatNumberWithCommas(tradedItem?.quantityTotal)}</td>
+                    <td>${formatNumberWithCommas(tradedItem?.quantityTotal * trade.value)}</td>
+                    <td>${formatNumberWithCommas(offeredItem?.quantityTotal)}</td>
+                    <td>${formatNumberWithCommas(wantedItem?.quantityTotal)}</td>
+                    <td>${returnHtmlTradeIdsArrayItems(trade?.tradeIds, trade?.percents)}</td>
+                    `;
+                nb++;
+                searchResultTableBody.appendChild(row);
+            }
+                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+            }
+        });
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const searchResults = document.getElementById('searchResults');
+            if (searchTerm === '') {
+                searchResults.innerHTML = '';
+            } else {
+                const results = searchTrades(buffer.currentTrades, searchTerm);
+                searchResults.innerHTML = searchResultTable('searchResultTableBody');
+                const searchResultTableBody = document.getElementById('searchResultTableBody');
+                returnHtmlTradeDescTable(1, results, searchResultTableBody, 'profit');
+                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+            }
+        });
+        searchInputProfit.addEventListener('input', () => {
+            const searchTerm = searchInputProfit.value.toLowerCase();
+            const searchResults = document.getElementById('searchProfit');
+            if (searchTerm === '') {
+                searchResults.innerHTML = '';
+            } else {
+                const results = searchProfits(searchTerm, buffer.currentProfits);
+                searchResults.innerHTML = searchResultProfitTable('searchProfitResults');
+                const searchResultTableBody = document.getElementById('searchProfitResults');
+                let nb = 1;
+                for (let i = 0; i < results.length; i++) {
+                    const row = document.createElement('tr');
+                    const trade = results[i];
+                    const traderTradeHistory = buffer.currentStats.userTradesAndHistory.find(trader => trader.username === trade.username)
+                    row.innerHTML = `
+                    <td><a class="btn-link text-secondary-emphasis" onclick="hackToTop()" href="javascript:;" role="button">${nb}</a></td>
+                    <td>${trade.username}</td>
+                    <td>${returnHtmlTradeIdsArray(traderTradeHistory)}</td>
+                    <td>${formatNumberWithCommas(trade.profit)}</td>
+                    <td>${formatNumberWithCommas(trade.gain)}</td>
+                    <td>${formatNumberWithCommas(trade.loss)}</td>
+                    `;
+                    nb++;
+                    searchResultTableBody.appendChild(row);
+                }
+                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+            }
+        });
+        (async () => {
+            try {
+                await populateSelector();
+                await displayDailyTrades();
+            } catch (error) {
+                console.error('Error initializing page:', error);
+            }
+        })();
+        const hideStats = () => {
+            const statsControl = document.getElementById('statsControl');
+            const statsDisplay = document.getElementById('statsDisplay');
+            const statsControlHtml =(status)=> { return `Stats [<a class="btn-link text-secondary" onclick="hideStats()" href="javascript:;" role="button">${status}</a>]`; }
+            if (buffer.statsControl == 0) { //show
+                buffer.statsControl = 1;
+                statsDisplay.classList.remove('d-none');
+                statsControl.innerHTML = statsControlHtml(`Hide`);
+            } else { //hide
+                buffer.statsControl = 0;
+                statsControl.innerHTML = statsControlHtml(`Show`);
+                statsDisplay.classList.toggle('d-none');
+            }
+        };
+        document.getElementById('searchInput').focus();
+  </script>
+</body>
+</html>
