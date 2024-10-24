@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content=
+  "width=device-width, initial-scale=1, user-scalable=no">
+  <link rel="icon" type="image/x-icon" sizes="32x32" href=
+  "https://kirka.lukeskywalk.com/favicon.ico">
+  <meta property="og:title" content=
+  "kirka.lukeskywalk.com: a lightweight kirka.io global chat. #kirkaio #kirka">
+  <meta name="description" content=
+  "kirka.lukeskywalk.com: a lightweight kirka.io global chat. #kirkaio #kirka">
+  <meta property="og:description" content=
+  "kirka.lukeskywalk.com: a lightweight kirka.io global chat. #kirkaio #kirka">
+  <meta name="theme-color" content="#000000">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>Global Chat - KirkaTrades</title>
+  <link rel="stylesheet" href=
+  "https://kirka.lukeskywalk.com/static/bootstrap/5.3.2-dist/css/bootstrap.min.css"
+  integrity=
+  "sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN">
+
+  <style>
+        .nav-scroller {
+            position: relative;
+            z-index: 2;
+            height: 2.75rem;
+            overflow-y: hidden;
+        }
+        .nav-scroller .nav {
+            display: flex;
+            flex-wrap: nowrap;
+            padding-bottom: 1rem;
+            margin-top: -1px;
+            overflow-x: auto;
+            text-align: center;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+  </style>
+</head>
+<body>
+  <script fetchpriority="high" src=
+  "https://kirka.lukeskywalk.com/static/bootstrap/5.3.2-dist/js/bootstrap.bundle.min.js"
+  integrity=
+  "sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"></script>
+  <div class="container-fluid">
+    <div id="chatter"></div>
+    <div class=
+    "card fixed-end fixed-top col-sm-12 col-lg-6 bg-dark-subtle">
+      <div class="card-body row row-cols-lg-auto">
+        <div class="form-check form-check-inline">
+          <select id="pricelistSelector" class="form-select">
+            <option value="0">
+              Average
+            </option>
+            <option value="2">
+              Yzzz
+            </option>
+            <option value="3">
+              Bros
+            </option>
+          </select>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input btn-secondary" onclick=
+          "autoscroll()" type="checkbox" id="autoscrolling" checked
+          > <label class="form-check-label" for=
+          "autoscrolling">AutoScroll Down</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <label class="form-check-label"><a class="text-secondary"
+          href="https://kirka.lukeskywalk.com" target=
+          "_blank"><svg xmlns="http://www.w3.org/2000/svg" width=
+          "16" height="16" fill="currentcolor" class=
+          "bi bi-graph-up-arrow" viewbox="0 0 16 16">
+          <path fill-rule="evenodd" d=
+          "M0 0h1v15h15v1H0V0Zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5Z"></path>
+          </svg>KirkaTrades</a></label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+        const settings = {
+            url: 'wss://chat.kirka.io',
+        };
+        let preferences = {
+            consoled: false,
+            autoscroll: 1,
+            nonce: 0,
+            lastUser: null,
+            pricelist: 0,
+        };
+        const autoscroll = () => {
+            if (preferences.autoscroll === 1) {
+                preferences.autoscroll = 0;
+            } else {
+                preferences.autoscroll = 1;
+            }
+            if (preferences.consoled === true) {
+                console.log({ autoscroll: preferences.autoscroll });
+            }
+        };
+        let lastData = {
+            timer: null,
+        };
+        const consoled = (x) => {
+            if (preferences.consoled) {
+                console.log(`${new Date().toLocaleTimeString()} ${x}`);
+            }
+        };
+        let newPriceList, timestamps;
+        const itemTag = /(\[.*?\|.*?\|.*?\|.*?\]).*/i;
+        const tradeTag = /(\*\*\/trade accept (\d.*?)\*\*)/i;
+        const commonTag = /(\[.*?(\|.*?\||\|\|).*?\|COMMON\]).*/i;
+        const rareTag = /(\[.*?(\|.*?\||\|\|?).*?\|RARE\]).*/i;
+        const epicTag = /(\[.*?(\|.*?\||\|\|?).*?\|EPIC\]).*/i;
+        const legendaryTag = /(\[.*?(\|.*?\||\|\|?).*?\|LEGENDARY\]).*/i;
+        const mythicalTag = /(\[.*?(\|.*?\||\|\|?).*?\|MYTHICAL\]).*/i;
+        const regexAcceptedTradeOffer = /accepted.*offer/i;
+        const regexCancelledTradeOffer = /cancelled their trade offer/i;
+        const regexOfferToAccept = /is offering their(?:(?!is offering their).)*?for your(?:(?!for your).)*?to accept this offer/i;
+        const regexUsername = /([A-Za-z0-9_\.\!\@\#\$\^\&\*\(\)\[\]\/\\\|\+\-]{4,14})#+([A-Za-z0-9]){6}/;/*/\w+#\w+/g;*/
+        const regexItemsFix = /\[\s*(.*?)\|(.*?)\|(.*?)\|(.*?)\]x?(\d*)/g;
+        const regexTradeId = /(\*\*\/trade accept (\d+?)\*\*)/i;
+        document.getElementById('autoscrolling').checked = true;
+        const refreshPriceList = () => {
+            fetch('priceList.json')
+                .then(response => {
+                    timestamps = response.headers.get('last-modified');
+                    return response.json();
+                })
+                .then((responsePriceList) => {
+                    newPriceList = responsePriceList;
+                })
+                .catch(error => {
+                    console.error('Error fetching or parsing JSON file:', error);
+                });
+        };
+        const refreshListTimer = setInterval(refreshPriceList, 15 * 60 * 1000);
+        const copyClipboard = async (target) => {
+            let range = document.createRange();
+            range.selectNode(document.getElementById(target));
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand("copy");
+            window.getSelection().removeAllRanges();
+        };
+        const returnItemType = (weaponType, itemType) => {
+            if (itemType === 'BODY_SKIN') {
+                return 'Character';
+            } else if (itemType === 'WEAPON_SKIN') {
+                return `${weaponType}`;
+            } else if (itemType === 'CHEST') {
+                return 'Chest'
+            } else if (itemType === 'CARD') {
+                return 'Card';
+            } else {
+                //impossible
+                return '';
+            }
+        };
+        fetch('priceList.json')
+            .then(response => {
+                timestamps = response.headers.get('last-modified');
+                return response.json();
+            })
+            .then((responsePriceList) => {
+                newPriceList = responsePriceList;
+                const searchItemByName = (itemName, itemType, priceList) => {
+                    for (let i = 0; i < priceList.length; i++) {
+                        if (priceList[i].itemName === itemName && priceList[i].type === itemType) {
+                            if (preferences.pricelist = 0) { //autopricing
+                                return priceList[i].Value;
+                            } else if (preferences.pricelist = 1) { //average
+                                if (priceList[i].average === 0 || priceList[i].average === undefined || priceList[i].average === null) {
+                                    return priceList[i].Value;
+                                } else { return priceList[i].average; }
+                            } else if (preferences.pricelist = 2) { //yzzz
+                                if (priceList[i].yzzz === 0 || priceList[i].yzzz === undefined || priceList[i].yzzz === null) {
+                                    return priceList[i].Value;
+                                } else {
+                                    return priceList[i].yzzz;
+                                }
+                            } else if (preferences.pricelist = 3) { //bros
+                                if (priceList[i].bros === 0 || priceList[i].bros === undefined || priceList[i].bros === null) {
+                                    return priceList[i].Value;
+                                } else {
+                                    return priceList[i].bros;
+                                }
+                            }
+                        }
+                    }
+                    return 0;
+                }
+                const trimsplit = (x) => {
+                    let parts = [];
+                    let lastIndex = 0;
+                    for (let match of x.matchAll(regexItemsFix)) {
+                        if (match.index !== lastIndex) {
+                            parts.push(x.slice(lastIndex, match.index));
+                        }
+                        parts.push(match[0]);
+                        lastIndex = match.index + match[0].length;
+                    } if (lastIndex !== x.length) {
+                        parts.push(x.substr(lastIndex));
+                    } return parts;
+                };
+                const formatNumber = (number) => {
+                    if (number === undefined) { number = 0; }
+                
+                    const absNumber = Math.abs(number);
+                    if (absNumber >= 1000000) {
+                        const million = (absNumber / 1000000).toFixed(0);
+                        return (number < 0 ? '-' : '') + million + "mil";
+                    } else if (absNumber >= 1000) {
+                        const thousand = (absNumber / 1000).toFixed(0);
+                        return (number < 0 ? '-' : '') + thousand + "k";
+                    } else {
+                        return number.toString();
+                    }
+                };
+                const trimMessage = (messageSplit) => {
+                    let delivery = document.createElement('p');
+                    delivery.setAttribute('class', 'mb-0');
+                    let isOffering = true;
+                    let offeringTotal = 0;
+                    let wantedTotal = 0;
+                    let favorableTrade = 'SCAM!!';
+                    let tradeStringUrl = `https://kirka.lukeskywalk.com/tradeoffer.html?`;
+                    let nonceFor = 1;
+                    let nonceYour = 1;
+                    let tradeStringItemDetails = [];
+                    let myItems = [];
+                    let yourItems =[];
+                    for (let i = 0; i < messageSplit.length; i++) {
+                        let tradeHack = 0;
+                        let sample = document.createElement('span');
+                        const tradeTagRegex = /\*\*\/trade accept (\d+)\*\*/i;
+                        const msgSplitHasTradeTag = tradeTagRegex.test(messageSplit[i]);
+                        const itemRegex = /\[([^\|\]]+)\|([^\|\]]*)\|([^\|\]]*)\|([^\|\]]+)](?:x(\d+))?/g;
+                        const itemMatches = messageSplit[i].matchAll(itemRegex);
+                        let itemDetails = [];
+                        for (const match of itemMatches) {
+                            const itemName = match[1];
+                            const weaponType = match[2];
+                            const itemType = match[3];
+                            const rarity = match[4];
+                            let quantity = 1;
+                            if (match[5]) {
+                                quantity = parseInt(match[5], 10);
+                            }
+                            itemDetails.push({ name: itemName, weaponType, itemType, rarity, quantity });
+                        }
+                        if (msgSplitHasTradeTag) {
+                            yourItems.forEach(({name, quantity})=> {
+                                tradeStringUrl += `&your${nonceYour}=${encodeURIComponent(name)}&yourq${nonceYour}=${quantity}`;
+                                nonceYour += 1;
+                            })
+                            if (offeringTotal > wantedTotal) { favorableTrade = 'GOOD!'}
+                            if (offeringTotal === 0 || wantedTotal === 0) { favorableTrade = 'New item?'}
+                            let newSplit = messageSplit[i].trim().split('**');
+                            tradeHack = 1;
+                            let newSample = document.createElement('span');
+                            sample.textContent = ` [${formatNumber(wantedTotal)}] Status: ${favorableTrade} (${formatNumber(offeringTotal-wantedTotal)}) ${newSplit[0]}**`;
+                            delivery.appendChild(sample);
+                            newSample.setAttribute('class', 'text-danger-emphasis stretched-link');
+                            newSample.setAttribute('href', 'javascript:;');
+                            newSample.setAttribute('role', 'button');
+                            newSample.setAttribute('onclick', `copyClipboard('TRADE${preferences.nonce}')`);
+                            newSample.setAttribute('id', `TRADE${preferences.nonce}`);
+                            newSample.textContent = `${newSplit[1]}`;
+                            delivery.appendChild(newSample);
+                            let lastSample = document.createElement('span');
+                            lastSample.textContent = `**${newSplit[2]} `;
+                            let sampleAnalyze = document.createElement('span');
+                            let linkAnalyze = document.createElement('a');
+                            linkAnalyze.setAttribute('class', 'text-success-emphasis stretched-link')
+                            linkAnalyze.setAttribute('href',`${tradeStringUrl}`);
+                            linkAnalyze.setAttribute('target','_blank');
+                            linkAnalyze.setAttribute('role','button');
+                            linkAnalyze.textContent = '(Analyze)';
+                            sampleAnalyze.appendChild(linkAnalyze);
+                            delivery.appendChild(lastSample);
+                            delivery.appendChild(sampleAnalyze);
+                        } else {
+                            if (messageSplit[i].includes("for your")) {
+                                myItems.forEach(({name, quantity})=> {
+                                    if (nonceFor === 1) {
+                                        tradeStringUrl += `for${nonceFor}=${encodeURIComponent(name)}&forq${nonceFor}=${quantity}`;
+                                    } else {
+                                        tradeStringUrl += `&for${nonceFor}=${encodeURIComponent(name)}&forq${nonceFor}=${quantity}`;
+                                    }
+                                    nonceFor += 1;
+                                })
+                                isOffering = false;
+                                sample.textContent = ` [${formatNumber(offeringTotal)}] ` + messageSplit[i];
+                            } else {
+                                itemDetails.forEach(({ name, weaponType, itemType, rarity, quantity }) => {
+                                    if (isOffering) {
+                                        myItems.push({name: name, quantity: quantity})
+                                    } else {
+                                        yourItems.push({name: name, quantity: quantity})
+                                    }
+                                    switch (rarity) {
+                                        case 'COMMON':
+                                            sample.style.color = 'Aquamarine';
+                                            break;
+                                        case 'RARE':
+                                            sample.style.color = 'Aqua';
+                                            break;
+                                        case 'EPIC':
+                                            sample.style.color = 'BlueViolet';
+                                            break;
+                                        case 'LEGENDARY':
+                                            sample.setAttribute('class', 'text-warning');
+                                            break;
+                                        case 'MYTHICAL':
+                                            sample.style.color = 'FireBrick';
+                                            break;
+                                        default:
+                                    }
+                                    const pricelistItemType = returnItemType(weaponType,itemType);
+                                    let itemPrice = searchItemByName(name, pricelistItemType, newPriceList);
+                                    if (isOffering) { 
+                                        offeringTotal += quantity * itemPrice;
+                                    } else {
+                                        wantedTotal += quantity * itemPrice;
+                                    }
+                                    const itemText = `[${name}]${(quantity >1)? `x${quantity}` : ''} (${formatNumber(quantity * itemPrice)})`;
+                                    sample.setAttribute('type', 'link');
+                                    sample.setAttribute('data-bs-toggle', 'tooltip');
+                                    sample.setAttribute('data-bs-html', 'true');
+                                    sample.setAttribute('data-bs-trigger', 'hover');
+                                    /* wpn: 509x257 char: 194x434  */
+                                    sample.setAttribute('data-bs-title',  `<img src='https://kirka.lukeskywalk.com/static/renders/${pricelistItemType}/${name}-render${(pricelistItemType == 'Character' || pricelistItemType == 'Card') ? '.png' : '.webp'}' 
+                                    title='${name}' 
+                                    alt='${name}' 
+                                    ${(pricelistItemType != 'Character') ? `style='width: 75px ; height: auto;'` : `style='width: 127px; height: auto; ;'`} />`);
+                                    sample.textContent += itemText;
+                                    new bootstrap.Tooltip(sample, {
+                                        sanitize: false
+                                    });
+                                });
+                                if (itemDetails.length === 0) {
+                                    sample.textContent = `${messageSplit[i]}`;
+                                }
+                            }
+                        }
+                        if (tradeHack === 0) {
+                            delivery.appendChild(sample);
+                        }
+                    }
+                    return delivery;
+                };
+                const errorToText = (code) => {
+                    switch (code) {
+                        case '1001':
+                            return 'server is down.';
+                        case '1002':
+                            return 'terminated, protocol error.';
+                        case '1003':
+                            return 'terminated, data error.';
+                        case '1004':
+                            return 'reserved.';
+                        case '1005':
+                            return 'no status code present.';
+                        case '1006':
+                            return 'connection closed abnormally.';
+                        case '1007':
+                            return 'terminated, inconsistent type of message.';
+                        case '1008':
+                            return 'terminated, received message violate policy.';
+                        case '1009':
+                            return 'terminated, message too big.';
+                        case '1010':
+                            return 'terminated, server not responding.';
+                        case '1011':
+                            return 'terminated, unexpected condition encountered.';
+                        default:
+                    }
+                };
+                const testChated = () => {
+                    let delivery = { message: 'MUFASA_685#Q15D2K is offering [TEST||BODY|COMMON], [Galaxy|LAR|WEAPON_SKIN|EPIC], [Winter|Weatie|WEAPON_SKIN|RARE]x2, [Spectacular|AR-9|WEAPON_SKIN|LEGENDARY], [Pink Demon|M60|WEAPON_SKIN|MYTHICAL], [Fur|VITA|WEAPON_SKIN|EPIC], [Hardened|VITA|WEAPON_SKIN|EPIC] for [Black Metal 2.0|VITA|WEAPON_SKIN|LEGENDARY], type  **/trade accept 10848** to accept this offer', type: 2, user: null };
+                    chated(delivery);
+                };
+                const chated = (x) => {
+                    let nickname = (x.user === null) ? 'SERVER' : x.user?.name + ` [${x.user?.level}] `;
+                    if (x.user?.role === 'VERIFIED') {
+                        nickname = '✅' + nickname;
+                    }
+                    if (x.user?.role === 'ADMIN' || x.user?.role === 'MODERATOR') {
+                        nickname = '🛡️' + nickname;
+                    }
+                    if (x.user?.role === 'OWNER') {
+                        nickname = '🏠' + nickname;
+                    }
+                    if (x.user?.role === 'BOT' || x.user?.role === 'ROBOT') {
+                        nickname = '🤖' + nickname;
+                    }
+                    const msg = x.message;
+                    const msgSplit = trimsplit(msg);
+                    const userIsntServerAndIsLastPostedMessage = (x.user != null && x.user?.name === preferences.lastUser);
+                    if (userIsntServerAndIsLastPostedMessage) {
+                        let oldMessage = document.getElementById(`ID${preferences.nonce - 1}`);
+                        oldMessage.appendChild(trimMessage(msgSplit));
+                        if (preferences.autoscroll === 1) {
+                            document.getElementById('chatter').scrollIntoView(false);
+                        }
+                    } else {
+                        let div1 = document.createElement('div');
+                        let divH = document.createElement('div');
+                        const userIsServer = x.user === null;
+                        if (userIsServer) {
+                            div1.setAttribute('class', 'toast fade show mt-1 mb-1 col-sm-10 text-bg-secondary');
+                        } else {
+                            div1.setAttribute('class', 'toast fade show mt-1 mb-1 col-sm-10');
+                        }
+                        div1.style.width = '100%'
+                        div1.setAttribute('aria-live', 'assertive');
+                        div1.setAttribute('role', 'alert');
+                        div1.setAttribute('aria-atomic', 'true');
+                        div1.setAttribute('animate', 'true');
+                        divH.setAttribute('class', 'toast-header');
+                        let big = document.createElement('strong');
+                        let small = document.createElement('small');
+                        const userIsModerator = (x.user?.role === 'VERIFIED');
+                        const userIsAdmin = (x.user?.role === 'MODERATOR' || x.user?.role === 'ADMIN' || x.user?.role === 'OWNER');
+                        const userIsBot = (x.user?.role === 'BOT' || x.user?.role === 'ROBOT');
+                        if (userIsServer) {
+                            big.setAttribute('class', 'me-auto text-light');
+                        } else {
+                            big.setAttribute('class', `me-auto ${(userIsModerator || userIsAdmin) ? ' text-info' : ''}`);
+                        }
+                        let post = document.createElement('div');
+                        if (userIsModerator || userIsAdmin) {
+                            post.setAttribute('class', 'toast-body text-info mb-0');
+                            post.setAttribute('id', `ID${preferences.nonce}`);
+                        } else if (userIsBot) {
+                            post.setAttribute('class', 'toast-body text-warning-emphasis mb-0');
+                            post.setAttribute('id', `ID${preferences.nonce}`);
+                        } else {
+                            post.setAttribute('class', 'toast-body text-light mb-0');
+                            post.setAttribute('id', `ID${preferences.nonce}`);
+                        }
+                        big.textContent = nickname;
+                        let bigShortLink = document.createElement('span');
+                        if (!userIsServer) {
+                            bigShortLink.setAttribute('id', `USER${preferences.nonce}${x.user?.shortId}`);
+                            bigShortLink.setAttribute('class', 'stretched-link text-secondary');
+                            bigShortLink.setAttribute('href', `javascript:;`);
+                            bigShortLink.setAttribute('role', 'button');
+                            bigShortLink.setAttribute('onclick', `copyClipboard('USER${preferences.nonce}${x.user?.shortId}')`);
+                            bigShortLink.textContent = `#${x.user?.shortId}`;
+                        }
+                        big.appendChild(bigShortLink);
+                        small.textContent = new Date().toLocaleTimeString();
+                        post.appendChild(trimMessage(msgSplit));
+                        divH.appendChild(big);
+                        divH.appendChild(small);
+                        div1.appendChild(divH);
+                        div1.appendChild(post);
+                        document.getElementById('chatter').appendChild(div1);
+                        preferences.nonce += 1;
+                        preferences.lastUser = x.user?.name;
+                        if (preferences.autoscroll === 1) {
+                            document.getElementById('chatter').scrollIntoView(false);
+                        }
+                        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                        const tooltipList3 = document.querySelectorAll(`[class='tooltip-inner']`);
+                        const tooltipList4 = document.querySelectorAll(`[class='tooltip-arrow']`);
+                        const hack1 = [...tooltipList3].map(tooltipTriggerEl2 => { if (preferences.autoscroll === 1) { tooltipTriggerEl2.hidden = true } });
+                        const hack2 = [...tooltipList4].map(tooltipTriggerEl2 => { if (preferences.autoscroll === 1) { tooltipTriggerEl2.hidden = true } });
+                        const hack0 = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+                    }
+                };
+                chated({ type: 2, user: null, message: 'kirka.io chat connecting...' });
+                var wsBm = null;
+                const reconnecBm = () => {
+                    wsBm = new WebSocket(settings.url, "protocolOne");
+                    wsBm.onopen = function (event) {
+                        clearInterval(lastData.timer);
+                        chated({ type: 2, user: null, message: 'kirka.io chat connected.' });
+                    };
+                    wsBm.onerror = function (err) {
+                        chated({ type: 2, user: null, message: `kirka.io chat encountered an error ${err}.` });
+                        wsBm.close();
+                    }
+                    wsBm.onclose = function (event) {
+                        chated({ type: 2, user: null, message: `kirka.io chat widget disconnected (${event.code}) ${errorToText(event.code)}. reconnecting...` });
+                        wsBm = null;
+                        lastData.timer = setInterval(reconnecBm, 2500);
+                    };
+                    wsBm.onmessage = function (message) {
+                        const delivery = JSON.parse(message.data);
+                        if (delivery.type === 3) {
+                            for (let i = delivery.messages.length - 1; i > -1; i--) {
+                                chated(delivery.messages[i])
+                            }
+                        }
+                        if (delivery.type !== 3) {
+                            chated(delivery)
+                        }
+                        if (preferences.consoled === true) {
+                            console.log(delivery);
+                        }
+                    };
+                };
+                reconnecBm();
+            })
+            .catch(error => {
+                console.error('Error fetching or parsing JSON file:', error);
+            });
+        document.getElementById('pricelistSelector').addEventListener('change', function () {
+            var selectorValue = this.value;
+            preferences.pricelist = selectorValue;
+        });
+  </script>
+</body>
+</html>
