@@ -3,11 +3,11 @@
 
 //The script manipulates the api request for the juice, it might not work first try, just refresh it and it worked
 
-let shortId = ""; //shortid (6 chars long)
+let shortId = "B0TMFC"; //shortid (6 chars long)
 let linked_badge = true; //true or false
 let booster_badge = true; //true or false
 let badges = [];
-badges.push("https://irrvlo.xyz/irrvlo.png") //example, you can insert as many as you want
+badges.push("https://juicepoopooumgood.github.io/items/poop.webp") //example, you can insert as many as you want
 let type = "override"; //keep original badges and add only your badge = append | remove all original badges only add your own badge = override
 
 /* DONT CHANGE ANYTHING BELOW */
